@@ -38,73 +38,79 @@ const prepareOutputFilename = (filename) => {
 };
 
 const startApp = async () => {
-  // Ask if user is ready
-  const answer = await inquirer.prompt([
-    {
-      name: "start",
-      message:
-        'Hi! Welcome to "Watermark manager". Copy your image files to `/img` folder. Then you\'ll be able to use them in the app. Are you ready?',
-      type: "confirm",
-    },
-  ]);
-
-  // if answer is no, just quit the app
-  if (!answer.start) process.exit();
-
-  // ask about input file and watermark type
-  const options = await inquirer.prompt([
-    {
-      name: "inputImage",
-      type: "input",
-      message: "What file do you want to mark?",
-      default: "test.jpg",
-    },
-    {
-      name: "watermarkType",
-      type: "list",
-      choices: ["Text watermark", "Image watermark"],
-    },
-  ]);
-  if (!fs.existsSync("./img/" + options.inputImage)) {
-    console.log("Something went wrong... Try again");
-    process.exit();
-  }
-  if (options.watermarkType === "Text watermark") {
-    const text = await inquirer.prompt([
+  while (true) {
+    // Ask if user is ready
+    const answer = await inquirer.prompt([
       {
-        name: "value",
-        type: "input",
-        message: "Type your watermark text:",
+        name: "start",
+        message:
+          'Hi! Welcome to "Watermark manager". Copy your image files to `/img` folder. Then you\'ll be able to use them in the app. Are you ready?',
+        type: "confirm",
       },
     ]);
-    options.watermarkText = text.value;
-    try {
-      await addTextWatermarkToImage(
-        "./img/" + options.inputImage,
-        "./img/" + prepareOutputFilename(options.inputImage),
-        "./img/" + options.watermarkImage
-      );
-    } catch (error) {
+
+    // if answer is no, just quit the app
+    if (!answer.start) process.exit();
+
+    // ask about input file and watermark type
+    const options = await inquirer.prompt([
+      {
+        name: "inputImage",
+        type: "input",
+        message: "What file do you want to mark?",
+        default: "test.jpg",
+      },
+      {
+        name: "watermarkType",
+        type: "list",
+        choices: ["Text watermark", "Image watermark"],
+      },
+    ]);
+    if (!fs.existsSync("./img/" + options.inputImage)) {
       console.log("Something went wrong... Try again");
+      process.exit();
     }
-  } else {
-    const image = await inquirer.prompt([
-      {
-        name: "filename",
-        type: "input",
-        message: "Type your watermark name:",
-        default: "logo.png",
-      },
-    ]);
-    options.watermarkImage = image.filename;
-    try {
-      await addImageWatermarkToImage(
-        "./img/" + options.inputImage,
-        "./img/" + prepareOutputFilename(options.inputImage),
-        "./img/" + options.watermarkImage
-      );
-    } catch (error) {
-      console.log("Something went wrong... Try again");
+    if (options.watermarkType === "Text watermark") {
+      const text = await inquirer.prompt([
+        {
+          name: "value",
+          type: "input",
+          message: "Type your watermark text:",
+        },
+      ]);
+      options.watermarkText = text.value;
+      try {
+        await addTextWatermarkToImage(
+          "./img/" + options.inputImage,
+          "./img/" + prepareOutputFilename(options.inputImage),
+          "./img/" + options.watermarkImage
+        );
+        console.log("Success!");
+      } catch (error) {
+        console.log("Something went wrong... Try again");
+        continue; // restart the loop
+      }
+    } else {
+      const image = await inquirer.prompt([
+        {
+          name: "filename",
+          type: "input",
+          message: "Type your watermark name:",
+          default: "logo.png",
+        },
+      ]);
+      options.watermarkImage = image.filename;
+      try {
+        await addImageWatermarkToImage(
+          "./img/" + options.inputImage,
+          "./img/" + prepareOutputFilename(options.inputImage),
+          "./img/" + options.watermarkImage
+        );
+        console.log("Success!");
+      } catch (error) {
+        console.log("Something went wrong... Try again");
+        continue; // restart the loop
+      }
     }
   }
 };
