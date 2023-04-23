@@ -83,7 +83,7 @@ const startApp = async () => {
         await addTextWatermarkToImage(
           "./img/" + options.inputImage,
           "./img/" + prepareOutputFilename(options.inputImage),
-          "./img/" + options.watermarkImage
+          options.watermarkText
         );
         console.log("Success!");
       } catch (error) {

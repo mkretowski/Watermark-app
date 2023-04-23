@@ -1,6 +1,5 @@
 {
   "name": "Watermark-app",
-  "packageManager": "yarn@3.5.0",
   "dependencies": {
     "inquirer": "6.5.0",
     "jimp": "^0.22.7"
